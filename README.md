@@ -1,5 +1,10 @@
 # taxi-demand-forecast
+## Team
 
+- Emily Wang(sw2383)
+- Yuhe Jiang(yj596)
+- Runhua Cao(rc993)
+  
 ## Purpose
 
 Predicting hourly Uber/Lyft pickup demand by NYC taxi zone using Jan 2026 HVFHV (High Volume For-Hire Vehicle) trip data. Built as a Python package with a full model training and evaluation pipeline.
