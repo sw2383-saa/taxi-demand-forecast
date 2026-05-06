@@ -10,7 +10,6 @@ import numpy as np
 from taxi_demand.features import aggregate, add_lags, build_features
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 def make_trips(n=200):
     """Synthetic clean loader output."""
@@ -31,7 +30,6 @@ def make_agg():
     })
 
 
-# ── aggregate() ───────────────────────────────────────────────────────────────
 
 def test_aggregate_returns_dataframe():
     df = make_trips()
@@ -74,7 +72,7 @@ def test_aggregate_demand_sum_matches_input():
 def test_aggregate_sorted_by_zone_then_hour():
     df = make_trips()
     result = aggregate(df)
-    assert result["zone_id"].is_monotonic_increasing or True  # sorted within zone
+    assert result["zone_id"].is_monotonic_increasing or True
     for zone in result["zone_id"].unique():
         zone_df = result[result["zone_id"] == zone]
         assert zone_df["hour"].is_monotonic_increasing
@@ -97,7 +95,6 @@ def test_aggregate_single_zone_single_hour():
     assert result.iloc[0]["zone_id"] == 161
 
 
-# ── add_lags() ────────────────────────────────────────────────────────────────
 
 def test_add_lags_returns_dataframe():
     agg = make_agg()
@@ -162,7 +159,6 @@ def test_add_lags_does_not_mix_zones():
     assert pd.isna(zone2.loc[0, "lag_1h"])
 
 
-# ── build_features() ──────────────────────────────────────────────────────────
 
 def test_build_features_output_columns():
     df = make_trips()

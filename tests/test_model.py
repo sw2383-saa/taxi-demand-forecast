@@ -12,7 +12,6 @@ import pandas as pd
 from taxi_demand.model import DemandForecaster
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 def make_df(n=100, seed=42):
     """Synthetic features DataFrame matching the input contract."""
@@ -38,7 +37,6 @@ def make_df_with_nans(n=100, seed=42):
     return df
 
 
-# ── fit() ─────────────────────────────────────────────────────────────────────
 
 def test_fit_runs_without_error():
     model = DemandForecaster()
@@ -67,7 +65,6 @@ def test_fit_with_all_nan_raises():
         model.fit(df)
 
 
-# ── predict() ─────────────────────────────────────────────────────────────────
 
 def test_predict_returns_ndarray():
     model = DemandForecaster()
@@ -118,7 +115,6 @@ def test_predict_reasonable_range():
     assert result.max() < 10000
 
 
-# ── save() and load() ─────────────────────────────────────────────────────────
 
 def test_save_creates_file():
     model = DemandForecaster()

@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taxi-demand-forecast"
+version = "0.2.0"
+description = "Hourly NYC HVFHV pickup demand forecaster: data loading, feature engineering, scikit-learn models, and evaluation utilities."
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Emily Wang"},
+    {name = "Yuhe Jiang"},
+    {name = "Runhua Cao", email = "rc993@cornell.edu"},
+]
+requires-python = ">=3.9"
+keywords = ["nyc", "taxi", "forecasting", "machine-learning", "hvfhv"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+    "scikit-learn>=1.1",
+    "pyarrow>=10.0",
+    "requests>=2.28",
+    "matplotlib>=3.5",
+    "joblib>=1.2",
+    "beautifulsoup4>=4.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "coverage>=7.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["taxi_demand*"]
+exclude = ["tests*", "data*"]
+
+[tool.setuptools.package-data]
+# Bundle the Taxi Zone Lookup CSV inside the installed package
+# itself (at taxi_demand/data/taxi_zone_lookup.csv), so that
+# importlib.resources can find it under any install mode --
+# editable, normal, wheel, or pip install --target. Without this
+# declaration setuptools strips data files from the wheel and
+# load_zone_lookup() would fail with FileNotFoundError for any
+# user who did not use editable install.
+taxi_demand = ["data/*.csv"]
+
+[tool.coverage.run]
+branch = true
+source = ["taxi_demand"]
+omit = ["*/tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

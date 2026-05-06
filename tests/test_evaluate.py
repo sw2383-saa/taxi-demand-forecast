@@ -11,7 +11,6 @@ from taxi_demand.model import DemandForecaster
 from taxi_demand.evaluate import mae, rmse, naive_baseline, evaluate_model
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 def make_df(n=100, seed=42):
     """Synthetic features DataFrame matching the input contract."""
@@ -42,7 +41,6 @@ def fitted_model(df=None):
     return model
 
 
-# ── mae() ─────────────────────────────────────────────────────────────────────
 
 def test_mae_returns_float():
     result = mae(np.array([1.0, 2.0, 3.0]), np.array([1.0, 2.0, 3.0]))
@@ -67,7 +65,6 @@ def test_mae_is_non_negative():
     assert mae(y_true, y_pred) >= 0
 
 
-# ── rmse() ────────────────────────────────────────────────────────────────────
 
 def test_rmse_returns_float():
     result = rmse(np.array([1.0, 2.0, 3.0]), np.array([1.0, 2.0, 3.0]))
@@ -100,7 +97,6 @@ def test_rmse_geq_mae():
     assert rmse(y_true, y_pred) >= mae(y_true, y_pred)
 
 
-# ── naive_baseline() ──────────────────────────────────────────────────────────
 
 def test_naive_baseline_returns_ndarray():
     df = make_df()
@@ -134,7 +130,6 @@ def test_naive_baseline_no_nans_in_output():
     assert np.isfinite(result).all()
 
 
-# ── evaluate_model() ──────────────────────────────────────────────────────────
 
 def test_evaluate_model_returns_dict():
     df = make_df()

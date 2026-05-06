@@ -10,10 +10,14 @@ import tempfile
 import pytest
 import pandas as pd
 import numpy as np
-from taxi_demand.loader import load, download, REQUIRED_COLUMNS
+from taxi_demand.loader import (
+    NUM_TAXI_ZONES,
+    REQUIRED_COLUMNS,
+    download,
+    load,
+)
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 def make_parquet(tmp_path, n=200, include_nulls=True, include_bad_zones=True):
     """Create a synthetic HVFHV-style parquet file for testing."""
@@ -33,7 +37,6 @@ def make_parquet(tmp_path, n=200, include_nulls=True, include_bad_zones=True):
     return path, df
 
 
-# ── load() ────────────────────────────────────────────────────────────────────
 
 def test_load_returns_dataframe(tmp_path):
     path, _ = make_parquet(tmp_path)
@@ -69,13 +72,18 @@ def test_load_drops_null_rows(tmp_path):
 def test_load_filters_invalid_pu_zones(tmp_path):
     path, _ = make_parquet(tmp_path, include_bad_zones=True)
     df = load(path)
-    assert df["PULocationID"].between(1, 263).all()
+    # Use NUM_TAXI_ZONES (265) rather than a hard-coded 263 so this
+    # test stays in sync with loader.clean_trips's actual filter
+    # range. The two earlier values (263, 264) were tightenings the
+    # team made before discovering that the official Taxi Zone
+    # Lookup CSV publishes 265 IDs total.
+    assert df["PULocationID"].between(1, NUM_TAXI_ZONES).all()
 
 
 def test_load_filters_invalid_do_zones(tmp_path):
     path, _ = make_parquet(tmp_path, include_bad_zones=True)
     df = load(path)
-    assert df["DOLocationID"].between(1, 263).all()
+    assert df["DOLocationID"].between(1, NUM_TAXI_ZONES).all()
 
 
 def test_load_resets_index(tmp_path):
@@ -90,7 +98,6 @@ def test_load_file_not_found():
 
 
 def test_load_missing_columns(tmp_path):
-    # Parquet with wrong columns
     bad_df = pd.DataFrame({"wrong_col": [1, 2, 3]})
     path = str(tmp_path / "bad.parquet")
     bad_df.to_parquet(path)
@@ -111,7 +118,6 @@ def test_load_clean_data_no_rows_dropped(tmp_path):
     assert len(result) == 50
 
 
-# ── download() ────────────────────────────────────────────────────────────────
 
 def test_download_invalid_year():
     with pytest.raises(ValueError, match="year"):
@@ -130,7 +136,6 @@ def test_download_invalid_month_zero():
 
 def test_download_uses_cache(tmp_path, monkeypatch):
     """If file already exists, download() should return path without fetching."""
-    # Pre-create the file
     cached = tmp_path / "fhvhv_tripdata_2026-01.parquet"
     cached.write_bytes(b"fake content")
 
@@ -146,4 +151,4 @@ def test_download_uses_cache(tmp_path, monkeypatch):
 
     result = download(2026, 1, data_dir=str(tmp_path))
     assert result == str(cached)
-    assert len(called) == 0  # no HTTP request made
+    assert len(called) == 0

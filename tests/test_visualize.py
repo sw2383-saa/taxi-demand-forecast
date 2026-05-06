@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 from taxi_demand.visualize import plot_forecast, plot_demand_heatmap
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 def make_df(zones=None, n_hours=48):
     """Synthetic aggregated DataFrame matching the features.py output contract."""
@@ -37,7 +36,6 @@ def make_df(zones=None, n_hours=48):
     return pd.concat(rows, ignore_index=True)
 
 
-# ── plot_forecast() ───────────────────────────────────────────────────────────
 
 def test_plot_forecast_runs_without_error():
     df = make_df()
@@ -70,7 +68,6 @@ def test_plot_forecast_no_file_without_save_path(tmp_path):
     zone_df = df[df["zone_id"] == 161].sort_values("hour")
     y_pred = np.random.randint(10, 200, len(zone_df))
     plot_forecast(df, zone_id=161, y_pred=y_pred)
-    # No file should appear in tmp_path
     assert len(list(tmp_path.iterdir())) == 0
 
 
@@ -90,10 +87,19 @@ def test_plot_forecast_returns_none():
     assert result is None
 
 
-# ── plot_demand_heatmap() ─────────────────────────────────────────────────────
+def test_plot_forecast_length_mismatch_raises():
+    """Catching the length mismatch is friendlier than rendering a
+    silently misaligned plot."""
+    df = make_df()
+    # Filtered slice for zone 161 has 48 rows; pass a shorter y_pred.
+    bad_pred = np.array([1.0, 2.0, 3.0])
+    with pytest.raises(ValueError, match="y_pred has length"):
+        plot_forecast(df, zone_id=161, y_pred=bad_pred)
+
+
 
 def test_plot_demand_heatmap_runs_without_error():
-    df = make_df(zones=list(range(1, 25)))  # 24 zones
+    df = make_df(zones=list(range(1, 25)))
     plot_demand_heatmap(df)
 
 
